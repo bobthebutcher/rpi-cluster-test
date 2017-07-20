@@ -66,6 +66,18 @@
         - {"src": "salt-minion.conf.j2", "dst": "minion"} 
         - {"src": "salt-master.conf.j2", "dst": "master"} 
 
+    - name: "Copy Salt state files to master"
+      copy:
+        src: "{{ item }}"
+        dest: "/srv/salt/states/{{ item }}"
+        mode: 0755
+      with_items:
+        - "vim.sls"
+        - "python.sls"
+        - "git.sls"
+        - "nmap.sls"
+        - "top.sls"
+
     - name: "Start and enable services"
       systemd:
         name: "{{ item }}"
