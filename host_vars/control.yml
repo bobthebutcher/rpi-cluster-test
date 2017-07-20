@@ -1,0 +1,11 @@
+---
+host_name: "ctrl-01"
+
+subnets:
+  - network: "10.100.1.0"
+    netmask: "255.255.255.0"
+    range: "10.100.1.100 10.100.1.150"
+    options: 
+      - "routers 10.100.1.1"
+      - "subnet-mask 255.255.255.0"
+   
