@@ -1,2 +1,4 @@
 ---
 host_name: "node-01"
+
+mac_address: "b8:27:eb:0c:be:57"

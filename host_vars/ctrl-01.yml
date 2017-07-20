@@ -1,6 +1,8 @@
 ---
 host_name: "ctrl-01"
 
+mac_address: "b8:27:eb:a7:e0:1e"
+
 dhcp_interfaces:
   - "eth1"
 
