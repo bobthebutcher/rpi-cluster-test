@@ -1,24 +1,107 @@
-- name: Setup Raspberry Pi Controllers
-  hosts: controllers
+- name: "Common Tasks"
+  hosts: all
   become: True
-  
+
   tasks:
-    - name: Install APT packages
+    - name: "Add Salt APT key"
+      apt_key:
+        url: "https://repo.saltstack.com/apt/debian/8/amd64/latest/SALTSTACK-GPG-KEY.pub"
+        state: present
+        validate_certs: False
+
+    - name: "Create Salt repo directory"
+      copy:
+        src: "files/saltstack.list"
+        dest: "/etc/apt/sources.list.d/saltstack.list"
+        mode: 0755
+
+    - name: "Install APT packages"
       apt:
         name: "{{ item }}"
         state: present
       with_items:
         - "vim"
+
+
+- name: "Setup Raspberry Pi Controllers"
+  hosts: controllers
+  become: True
+  
+  tasks:
+    - name: "Install APT packages"
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: True
+      with_items:
         - "isc-dhcp-server"
+        - "salt-master"
+        - "salt-minion"
 
-    - name: Copy DHCP config to Controller
+    - name: "Copy DHCP config files to Controller"
       template:
-        src: "templates/dhcp.conf.j2"
-        dest: "/etc/dhcp/dhcpd.conf"
+        src: "{{ item.src }}"
+        dest: "{{ item.dst }}"
+      with_items:
+        - {"src": "templates/dhcp.conf.j2", "dst": "/etc/dhcp/dhcpd.conf"}
+        - {"src": "templates/isc-dhcp-server.j2", "dst": "/etc/default/isc-dhcp-server"}
 
-    - name: Start and enable DHCP service
+    - name: "Create salt directories"
+      file:
+        dest: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - "/srv/salt/pillar"
+        - "/srv/salt/states"
+        - "/srv/salt/reactors"
+        - "/srv/salt/templates"
+
+    - name: "Copy Salt config files to master"
+      template:
+        src: "templates/{{ item.src }}"
+        dest: "/etc/salt/{{ item.dst }}"
+        mode: 0755
+      with_items:
+        - {"src": "salt-minion.conf.j2", "dst": "minion"} 
+        - {"src": "salt-master.conf.j2", "dst": "master"} 
+
+    - name: "Start and enable services"
       systemd:
-        name: "isc-dhcp-server"
+        name: "{{ item }}"
         state: restarted
         enabled: True
-        
+      with_items:
+        - "isc-dhcp-server"
+        - "salt-master"
+        - "salt-minion"
+
+
+
+- name: "Setup Raspberry Pi Nodes"
+  hosts: nodes
+  become: True
+  
+  tasks:
+    - name: "Install APT packages"
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: True
+      with_items:
+        - "salt-minion"
+
+    - name: "Copy minion config to minions"
+      template:
+        src: "templates/salt-minion.conf.j2"
+        dest: "/etc/salt/minion"
+        mode: 0755
+
+    - name: "Start and enable services"
+      systemd:
+        name: "{{ item }}"
+        state: restarted
+        enabled: True
+      with_items:
+        - "salt-minion"
+      
