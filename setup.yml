@@ -77,6 +77,7 @@
         - "nmap.sls"
         - "top.sls"
         - "users.sls"
+        - "ntp.sls"
 
     - name: "Start and enable services"
       systemd:

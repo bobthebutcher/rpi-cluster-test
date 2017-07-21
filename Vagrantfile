@@ -6,6 +6,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "ctrl-01" do |node|
     node.vm.hostname = "ctrl-01"
     node.vm.box = "debian/jessie64"
+    node.vm.box_check_update = false
     node.vm.network "private_network", virtualbox__intnet: "lan", ip: "10.100.1.1"
   end
 
@@ -13,6 +14,7 @@ Vagrant.configure("2") do |config|
     config.vm.define "node-0#{i}" do |node|
       node.vm.hostname = "node-0#{i}"
       node.vm.box = "debian/jessie64"
+      node.vm.box_check_update = false
       node.vm.network "private_network", virtualbox__intnet: "lan", type: "dhcp"
     end
   end
