@@ -79,6 +79,16 @@
         - "users.sls"
         - "ntp.sls"
 
+    - name: "Copy Salt config files to master"
+      copy:
+        src: "{{ item }}"
+        dest: "/srv/salt/templates/{{ item }}"
+        mode: 0755
+      with_items:
+        - "ntp.conf.j2"
+
+
+
     - name: "Start and enable services"
       systemd:
         name: "{{ item }}"

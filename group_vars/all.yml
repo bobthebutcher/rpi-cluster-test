@@ -5,4 +5,11 @@ dns_servers:
   - "8.8.8.8"
   - "8.8.4.4"
 
+dhcp:
+  reserved_hosts:
+    - {"name": "node-01", "mac_address": "b8:27:eb:0c:be:57", "ipv4_address": "10.100.1.101"}
+    - {"name": "node-02", "mac_address": "b8:27:eb:0b:58:11", "ipv4_address": "10.100.1.102"}
+    - {"name": "node-03", "mac_address": "b8:27:eb:c7:7c:a7", "ipv4_address": "10.100.1.103"}
+    - {"name": "node-04", "mac_address": "b8:27:eb:29:d8:78", "ipv4_address": "10.100.1.104"}
+
 salt_master: "10.100.1.1"
